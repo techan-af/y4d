@@ -19,7 +19,7 @@ export interface Project {
   endDate: string
   category: string
   requirements: string[]
-  status?: "active" | "completed" | "paused"
+  status?: "active" | "completed" | "paused" | "closed" // add "closed" here
   createdAt: Date
 }
 
