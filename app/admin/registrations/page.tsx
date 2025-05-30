@@ -104,9 +104,17 @@ export default function RegistrationsPage() {
       })
 
       if (response.ok) {
+        const result = await response.json()
         await fetchRegistrations() // Refresh the list
         if (selectedRegistration && selectedRegistration._id === registrationId) {
           setSelectedRegistration({ ...selectedRegistration, status: newStatus as any })
+        }
+
+        // Show success message with email notification info
+        if (result.emailSent) {
+          console.log(`✅ Status updated to ${newStatus} and email notification sent!`)
+        } else {
+          console.log(`✅ Status updated to ${newStatus}`)
         }
       } else {
         console.error("Failed to update status:", response.status)
