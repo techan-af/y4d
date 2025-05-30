@@ -2,9 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/mongodb"
 
-export async function PATCH(request: NextRequest, context: any) {
-  const { params } = context;
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const { status } = await request.json()
 
     if (!["active", "closed", "completed", "paused"].includes(status)) {
@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest, context: any) {
     const projects = db.collection("projects")
 
     const result = await projects.updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           status,

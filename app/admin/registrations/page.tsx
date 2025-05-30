@@ -22,6 +22,8 @@ import {
   User,
   Calendar,
   ArrowLeft,
+  LogOut,
+  Shield,
 } from "lucide-react"
 import Link from "next/link"
 import type { Registration } from "@/lib/types"
@@ -53,10 +55,13 @@ export default function RegistrationsPage() {
 
   const fetchRegistrations = async () => {
     try {
+      setIsLoading(true)
       const response = await fetch("/api/admin/registrations")
       if (response.ok) {
         const data = await response.json()
         setRegistrations(data)
+      } else {
+        console.error("Failed to fetch registrations:", response.status)
       }
     } catch (error) {
       console.error("Error fetching registrations:", error)
@@ -72,10 +77,10 @@ export default function RegistrationsPage() {
     if (searchTerm) {
       filtered = filtered.filter(
         (reg) =>
-          reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reg.phone.includes(searchTerm) ||
-          reg.project.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          reg.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          reg.phone?.includes(searchTerm) ||
+          reg.project?.title?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
@@ -103,6 +108,8 @@ export default function RegistrationsPage() {
         if (selectedRegistration && selectedRegistration._id === registrationId) {
           setSelectedRegistration({ ...selectedRegistration, status: newStatus as any })
         }
+      } else {
+        console.error("Failed to update status:", response.status)
       }
     } catch (error) {
       console.error("Error updating status:", error)
@@ -170,10 +177,20 @@ export default function RegistrationsPage() {
               <span className="ml-2 text-xl font-bold text-gray-900">Y4D NGO - Beneficiary Management</span>
             </div>
             <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <Shield className="h-4 w-4" />
+                <span>Welcome, Admin</span>
+              </div>
               <Link href="/admin/dashboard">
                 <Button variant="outline">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
+                </Button>
+              </Link>
+              <Link href="/admin/login">
+                <Button variant="outline">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
                 </Button>
               </Link>
             </div>
@@ -327,8 +344,10 @@ export default function RegistrationsPage() {
                         </div>
                         <div className="mt-2">
                           <span className="text-sm font-medium text-gray-700">Project: </span>
-                          <span className="text-sm text-gray-600">{registration.project.title}</span>
-                          <span className="text-sm text-gray-500 ml-2">({registration.project.category})</span>
+                          <span className="text-sm text-gray-600">{registration.project?.title || "Unknown"}</span>
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({registration.project?.category || "N/A"})
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2 ml-4">
@@ -441,14 +460,16 @@ export default function RegistrationsPage() {
               <div>
                 <h3 className="text-lg font-semibold mb-3">Project Information</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">{selectedRegistration.project.title}</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    {selectedRegistration.project?.title || "Unknown Project"}
+                  </h4>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                      {selectedRegistration.project.category}
+                      {selectedRegistration.project?.category || "N/A"}
                     </span>
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
-                      {selectedRegistration.project.location}
+                      {selectedRegistration.project?.location || "Unknown Location"}
                     </div>
                   </div>
                 </div>

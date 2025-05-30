@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Users, Target, Award, ArrowRight, Phone, Mail, MapPin } from "lucide-react"
+import { Heart, Users, Target, Award, ArrowRight, Phone, Mail, MapPin, Shield } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -19,7 +19,13 @@ export default function LandingPage() {
             priority
           />
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
+          <Link href="/admin/login">
+            <Button variant="outline" size="sm">
+              <Shield className="h-4 w-4 mr-1" />
+              Admin
+            </Button>
+          </Link>
           <Link href="#about" className="text-sm font-medium hover:text-green-600 transition-colors">
             About
           </Link>

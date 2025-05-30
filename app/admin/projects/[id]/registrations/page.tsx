@@ -59,10 +59,14 @@ export default function ProjectRegistrationsPage() {
 
   const fetchProject = async () => {
     try {
-      const response = await fetch(`/api/admin/projects/${params.id}`)
+      console.log("Fetching project with ID:", params.id)
+      const response = await fetch(`/api/projects/${params.id}`)
       if (response.ok) {
         const data = await response.json()
+        console.log("Project data:", data)
         setProject(data)
+      } else {
+        console.error("Failed to fetch project:", response.status)
       }
     } catch (error) {
       console.error("Error fetching project:", error)
@@ -71,10 +75,16 @@ export default function ProjectRegistrationsPage() {
 
   const fetchRegistrations = async () => {
     try {
+      console.log("Fetching registrations for project ID:", params.id)
       const response = await fetch(`/api/admin/registrations?projectId=${params.id}`)
       if (response.ok) {
         const data = await response.json()
+        console.log("Registrations data:", data)
         setRegistrations(data)
+      } else {
+        console.error("Failed to fetch registrations:", response.status)
+        const errorText = await response.text()
+        console.error("Error response:", errorText)
       }
     } catch (error) {
       console.error("Error fetching registrations:", error)
@@ -256,6 +266,8 @@ export default function ProjectRegistrationsPage() {
           </div>
         )}
 
+
+
         {/* Stats Cards */}
         <div className="grid gap-6 md:grid-cols-4 mb-8">
           <Card>
@@ -435,7 +447,7 @@ export default function ProjectRegistrationsPage() {
         </Card>
       </main>
 
-      {/* Registration Details Dialog - Same as in the main registrations page */}
+      {/* Registration Details Dialog */}
       <Dialog open={!!selectedRegistration} onOpenChange={() => setSelectedRegistration(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>

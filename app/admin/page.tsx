@@ -8,13 +8,16 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Heart, Plus, ArrowLeft } from "lucide-react"
+import { Heart, Plus, ArrowLeft, LogOut, Shield } from "lucide-react"
 import Link from "next/link"
+import AdminProtectedRoute from "@/components/admin-protected-route"
+import { useAdminAuth } from "@/hooks/use-admin-auth"
 
-export default function AdminPage() {
+function AdminPageContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const { admin, logout } = useAdminAuth()
 
   const [formData, setFormData] = useState({
     title: "",
@@ -95,6 +98,10 @@ export default function AdminPage() {
               <span className="ml-2 text-xl font-bold text-gray-900">Y4D NGO - Admin</span>
             </div>
             <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <Shield className="h-4 w-4" />
+                <span>Welcome, {admin?.username}</span>
+              </div>
               <Link href="/admin/dashboard">
                 <Button variant="outline">View All Projects</Button>
               </Link>
@@ -104,6 +111,10 @@ export default function AdminPage() {
                   Back to Dashboard
                 </Button>
               </Link>
+              <Button variant="outline" onClick={logout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
             </div>
           </div>
         </div>
@@ -281,7 +292,7 @@ export default function AdminPage() {
 
               {/* Submit Button */}
               <div className="flex gap-4">
-                <Link href="/dashboard" className="flex-1">
+                <Link href="/admin/dashboard" className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     Cancel
                   </Button>
@@ -295,5 +306,13 @@ export default function AdminPage() {
         </Card>
       </main>
     </div>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <AdminProtectedRoute>
+      <AdminPageContent />
+    </AdminProtectedRoute>
   )
 }

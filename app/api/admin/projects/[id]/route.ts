@@ -2,14 +2,14 @@ import { type NextRequest, NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/mongodb"
 
-export async function GET(request: NextRequest, context: any) {
-  const { params } = context
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const client = await clientPromise
     const db = client.db("ngo_system")
     const projects = db.collection("projects")
 
-    const project = await projects.findOne({ _id: new ObjectId(params.id) })
+    const project = await projects.findOne({ _id: new ObjectId(id) })
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest, context: any) {
   }
 }
 
-export async function PUT(request: NextRequest, context: any) {
-  const { params } = context
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const projectData = await request.json()
 
     // Validate required fields
@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest, context: any) {
     delete updateData.createdAt
     delete updateData.currentBeneficiaries
 
-    const result = await projects.updateOne({ _id: new ObjectId(params.id) }, { $set: updateData })
+    const result = await projects.updateOne({ _id: new ObjectId(id) }, { $set: updateData })
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
@@ -73,21 +73,21 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-export async function DELETE(request: NextRequest, context: any) {
-  const { params } = context
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const client = await clientPromise
     const db = client.db("ngo_system")
     const projects = db.collection("projects")
     const registrations = db.collection("registrations")
 
     // Check if project has registrations
-    const registrationCount = await registrations.countDocuments({ projectId: params.id })
+    const registrationCount = await registrations.countDocuments({ projectId: id })
     if (registrationCount > 0) {
       return NextResponse.json({ error: "Cannot delete project with existing registrations" }, { status: 400 })
     }
 
-    const result = await projects.deleteOne({ _id: new ObjectId(params.id) })
+    const result = await projects.deleteOne({ _id: new ObjectId(id) })
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
